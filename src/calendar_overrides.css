@@ -1,0 +1,69 @@
+/*
+Bootstrap's colours LIGHT
+
+Primary: #0d6efd
+Secondary: #6c757d
+Success: #198754
+Info: #0dcaf0
+Warning: #ffc107
+Danger: #dc3545
+Light: #f8f9fa
+Dark: #212529
+White: #fff
+Black: #000
+
+BOOTSTRAP DARK
+
+Background Color (--bs-dark-bg): #212529
+Text Color (--bs-dark-text): #dee2e6
+Border Color (--bs-dark-border): #343a40
+Subtle Background Color (--bs-dark-bg-subtle): #343a40
+Subtle Border Color (--bs-dark-border-subtle): #495057
+Text Emphasis Color (--bs-dark-text-emphasis): #fff
+
+Background Color: #212529
+Text Color: #dee2e6
+Border Color: #343a40
+Subtle Background Color: #343a40
+Subtle Border Color: #495057
+Text Emphasis Color: #fff
+
+Primary: #0d6efd
+Secondary: #6c757d
+Success: #198754
+Info: #11cff0
+Warning: #ffc107
+Danger: #dc3545
+Light: #343a40
+Dark: #212529
+
+*/
+
+.rbc-btn-group > button[type=button] { color: white; }
+.rbc-button-link { font-size: 10px; }
+.rbc-event-content { font-size: 14px; }
+.rbc-btn-group > button[type=button]:focus,
+.rbc-btn-group > button[type=button]:active,
+.rbc-btn-group > button[type=button]:hover { color: #222; }
+.rbc-time-view { overflow: auto; }
+.rbc-off-range-bg { background-color: #000; }
+.rbc-today { background-color: #6c757d; }
+.rbc-current-time-indicator { background-color: #f53c4e; height: 5px; }
+.rbc-btn-group > button.rbc-active { color: black; }
+.rbc-show-more,
+.rbc-show-more:hover { background-color: #212529; color: #11cff0; }
+.rbc-selected-cell { background-color: #535354; }
+.rbc-overlay { background-color: #212529; color: white; }
+
+.Work { background-color: #0d6efd; }
+.Holiday { background-color: #6c757d; }
+.Other { background-color: #000000; }
+.Conference { background-color: #ffc107; }
+.Transit { background-color: #dc3545; }
+.Hobbies { background-color: #495057; }
+.FreeTime { background-color: #198754; }
+.Culturalevents { background-color: #343a40; }
+.Physicalworkout { background-color: #f8f9fa; color: black; }
+.Paid-timeoff { background-color: #11cff0; color: black; }
+.Self-improvement { background-color: #212529; }
+.Studyinglearning { background-color: #ffffff; color: black; }

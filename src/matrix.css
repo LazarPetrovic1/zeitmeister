@@ -1,0 +1,5 @@
+.urgImp { background: rgba(255, 0, 0, 0.5); }
+.nurgImp { background: rgba(0, 0, 255, 0.5); }
+.urgNimp { background: rgba(255, 255, 0, 0.5); }
+.nurgNimp { background: rgba(128, 128, 128, 0.5); }
+.trans { transition: background linear 250ms; }

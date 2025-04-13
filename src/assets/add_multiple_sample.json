@@ -1,0 +1,29 @@
+[
+  {
+    "id": 3,
+    "title": "strategize scalable platforms",
+    "allDay": true,
+    "start": "2025-03-14T20:02:40Z",
+    "end": "2025-05-05T00:39:52Z",
+    "resource": "Studying/learning",
+    "description": "donec pharetra magna vestibulum aliquet ultrices erat tortor sollicitudin mi sit amet"
+  },
+  {
+    "id": 4,
+    "title": "maximize rich e-business",
+    "allDay": true,
+    "start": "2025-03-21T05:28:59Z",
+    "end": "2025-05-12T08:13:23Z",
+    "resource": "Conference",
+    "description": "mi sit amet lobortis sapien sapien non mi integer ac neque duis bibendum"
+  },
+  {
+    "id": 5,
+    "title": "target virtual users",
+    "allDay": true,
+    "start": "2025-03-07T03:55:49Z",
+    "end": "2025-05-21T03:15:55Z",
+    "resource": "Other",
+    "description": "sit amet turpis elementum ligula vehicula consequat morbi a ipsum integer a"
+  }
+]
