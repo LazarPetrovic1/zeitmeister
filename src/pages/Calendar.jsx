@@ -31,7 +31,7 @@ let allViews = Object.keys(Views).map((k) => Views[k])
  */
 function Calendar() {
   // eslint-disable-next-line
-  const { events, saveEvent, lsEvents, removeEvent, saveManyEvents, clearEvents, removeRecurrent } = useEvents();
+  const { events, saveEvent, removeEvent, saveManyEvents, clearEvents, removeRecurrent } = useEvents();
   const [view, setView] = useState(() => Views.MONTH);
   const [date, setDate] = useState(() => new Date());
   const [showNewModal, setShowNewModal] = useState(() => false);
@@ -73,7 +73,7 @@ function Calendar() {
       const newEvents = startDates.map((sd, i) => ({
         id: len + i,
         title, allDay, start: new Date(sd),
-        end: combineDateAndTime({ start: new Date(sd), end: endDateTime }),
+        end: new Date(combineDateAndTime({ start: new Date(sd), end: new Date(endDateTime) })),
         resource: typeOfEvent || "Other",
         description: `${description}
         (This is a repeating event)`
@@ -84,7 +84,7 @@ function Calendar() {
       const startDates = fn(new Date(startDateTime));
       let len = events.length;
       const newEvents = startDates.map((sd, i) => {
-        const end = combineDateAndTime({ start: new Date(sd), end: endDateTime });
+        const end = new Date(combineDateAndTime({ start: new Date(sd), end: new Date(endDateTime) }));
         return {
           id: len + i, end,
           title, allDay,
@@ -102,8 +102,8 @@ function Calendar() {
         id,
         title,
         allDay,
-        start: startDateTime,
-        end: endDateTime,
+        start: new Date(startDateTime),
+        end: new Date(endDateTime),
         resource: typeOfEvent || "Other",
         description: `${description}\n(This is a repeating event)`
       };
@@ -212,7 +212,7 @@ function Calendar() {
         show={showMultiModal}
         onClose={() => setShowMultiModal(() => false)}
         onSave={addMultiple}
-        lslen={lsEvents.length}
+        lslen={events.length}
         mainbtn={{ mainbtntext: "Save changes", mainbtntype: "primary", mainbtnicon: "floppy-disk" }}
         title="Add multiple events feature (DEV ONLY)"
       />

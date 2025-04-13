@@ -133,7 +133,7 @@ export function dailyUntilEndDate(startDate, endDate) {
       dates.push(getFormattedDate(currentDate));
       currentDate.setDate(currentDate.getDate() + 1);
   }
-  return dates;
+  return dates.map(d => new Date(d));
 }
 
 export function dailyUntilEndOfWeek(startDate) {
@@ -148,7 +148,7 @@ export function dailyUntilEndOfWeek(startDate) {
 
   // Add the last day (Saturday) if it hasn't been added yet
   if (currentDate.getDay() === 6) { dates.push(getFormattedDate(currentDate)); }
-  return dates;
+  return dates.map(d => new Date(d));
 }
 
 export function dailyUntilFriday(startDate) {
@@ -158,7 +158,7 @@ export function dailyUntilFriday(startDate) {
     dates.push(getFormattedDate(currentDate));
     currentDate.setDate(currentDate.getDate() + 1);
   }
-  return dates.filter(d => new Date(d).getDay() !== 0 && new Date(d).getDay() !== 6);
+  return dates.filter(d => new Date(d).getDay() !== 0 && new Date(d).getDay() !== 6).map(d => new Date(d));
 }
 
 export function dailyUntilEndOfMonth(startDate) {
@@ -170,7 +170,7 @@ export function dailyUntilEndOfMonth(startDate) {
     currentDate.setDate(currentDate.getDate() + 1);
   }
   dates.push(currentDate)
-  return dates;
+  return dates.map(d => new Date(d));
 }
 
 export function workDaysUntilEndOfMonth(startDate) {
@@ -183,7 +183,7 @@ export function workDaysUntilEndOfMonth(startDate) {
       }
       currentDate.setDate(currentDate.getDate() + 1);
   }
-  return dates;
+  return dates.map(d => new Date(d));
 }
 
 export const stepToSlots = [
