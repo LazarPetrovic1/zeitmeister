@@ -40,7 +40,6 @@ function UIMatrix() {
   const [showInfo, setShowInfo] = useState(() => false);
   const [isBlink, setIsBlink] = useState(() => false)
   const toRef = useRef(null);
-  console.log("IVENC", events);
   const sortEvents = () => {
     evaluateEvents();
     setIsBlink(() => true)

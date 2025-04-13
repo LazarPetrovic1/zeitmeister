@@ -11,6 +11,7 @@ import {
   dailyUntilEndOfMonth,
   dailyUntilEndOfWeek,
   dailyUntilFriday,
+  parseISODate,
   stepToSlots,
   workDaysUntilEndOfMonth
 } from '../utils';
@@ -169,7 +170,7 @@ function Calendar() {
         localizer={localizer}
         startAccessor="start"
         endAccessor="end"
-        events={events}
+        events={events.map(evt => ({ ...evt, start: parseISODate(evt.start), end: parseISODate(evt.end) }))}
         style={{ height: 550 }}
         view={view}
         date={date}

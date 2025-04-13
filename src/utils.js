@@ -108,6 +108,14 @@ export const PALETTE_COMMANDS = [
 ];
 
 const getFormattedDate = (date) => date.toISOString();
+export function parseISODate(isoString) {
+  const date = new Date(isoString);
+  if (isNaN(date.getTime())) {
+    throw new Error('Invalid ISO date string');
+  }
+
+  return date;
+}
 export function combineDateAndTime(dates) {
   const start = new Date(dates.start), end = new Date(dates.end)
   // Extract the date parts from the first date
@@ -209,4 +217,10 @@ export const getPriority = (lv) => {
     default:
       return { txt: "Priority inconclusive", color: "rgb(150, 150, 150)" }
   }
+}
+export function floorDivide(numerator, denominator = 10) {
+  if (denominator === 0) {
+    throw new Error('Denominator cannot be zero');
+  }
+  return Math.floor(numerator / denominator);
 }

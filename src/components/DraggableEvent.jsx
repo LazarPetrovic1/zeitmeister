@@ -1,7 +1,7 @@
 import { Rnd } from "react-rnd";
 import EventDetailsModal from "./modals/EventDetailsModal";
 import { useState } from "react";
-import { getResourceColour } from "../utils";
+import { floorDivide, getResourceColour } from "../utils";
 import useEvents from "../hooks/useEvents";
 
 const DraggableEvent = ({ event, dimensions }) => {
@@ -11,8 +11,8 @@ const DraggableEvent = ({ event, dimensions }) => {
   const { color, background } = getResourceColour(newEvent.resource)
   const [show, setShow] = useState(false);
   const [style, setStyle] = useState(() => {
-    const x = event?.position?.x || newEvent.id * 50;
-    const y = event?.position?.y || 20;
+    const x = event?.position?.x || floorDivide(newEvent.id) * 50;
+    const y = event?.position?.y || floorDivide(newEvent.id) + 20;
     return { width: 50, height: 50, x, y }
   });
   const [isDragging, setIsDragging] = useState(false);
