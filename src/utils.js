@@ -1,17 +1,8 @@
 import moment from "moment";
 
-// EVENT INTERFACE
-//
-// {
-//   allDay?: boolean | undefined;
-//   title?: React.ReactNode | undefined;
-//   start?: Date | undefined;
-//   end?: Date | undefined;
-//   resource?: any;
-// }
-
 export const evtdate = (date) => moment(date).format("yyyy-MM-DD hh:mm")
-export const intro = `Welcome to TimeTracker - Zeitmeister, your ultimate companion for mastering the art of time management!
+export const intro = `Welcome to TimeTracker - Zeitmeister, your ultimate companion for mastering
+the art of time management!
 As the saying goes, "time is money," and every minute counts.
 
 Our app empowers you to:
@@ -104,6 +95,11 @@ export const PALETTE_COMMANDS = [
     name: "Patches",
     description: "Go to /patch-notes page",
     route: "/patch-notes"
+  },
+  {
+    name: "Results",
+    description: "Go to /results page",
+    route: "/results"
   },
 ];
 
@@ -209,7 +205,7 @@ export const getPriority = (lv) => {
     case 0:
       return { txt: "Urgent and important", color: "rgb(255, 0, 0)" }
     case 1:
-      return { txt: "Not urgent, but important", color: "rgb(0, 0, 255)" }
+      return { txt: "Not urgent, but important", color: "rgb(85, 73, 255)" }
     case 2:
       return { txt: "Urgent, but not important", color: "rgb(255, 255, 0)" }
     case 3:
@@ -218,9 +214,41 @@ export const getPriority = (lv) => {
       return { txt: "Priority inconclusive", color: "rgb(150, 150, 150)" }
   }
 }
+export const getPrioColours = (lv) => {
+  switch (lv) {
+    case 0:
+      return { color: "white", background: "rgb(255, 0, 0)" }
+    case 1:
+      return { color: "white", background: "rgb(0, 0, 255)" }
+    case 2:
+      return { color: "black", background: "rgb(255, 255, 0)" }
+    case 3:
+      return { color: "white", background: "rgb(100, 100, 100)" }
+    default:
+      return { color: "black", background: "rgb(150, 150, 150)" }
+  }
+}
 export function floorDivide(numerator, denominator = 10) {
   if (denominator === 0) {
     throw new Error('Denominator cannot be zero');
   }
   return Math.floor(numerator / denominator);
+}
+
+export const modulate = (index, denominator = 10) => index % denominator;
+
+export const checkClientRect = (item1, rect2) => {
+  if (!item1 || !rect2) return;
+  const rect1 = item1.getBoundingClientRect();
+  if (
+    rect1.x === rect2.x &&
+    rect1.y === rect2.y &&
+    rect1.width === rect2.width &&
+    rect1.height === rect2.height &&
+    rect1.top === rect2.top &&
+    rect1.bottom === rect2.bottom &&
+    rect1.left === rect2.left &&
+    rect1.right === rect2.right
+  ) return true;
+  return false;
 }

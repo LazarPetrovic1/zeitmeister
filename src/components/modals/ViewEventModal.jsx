@@ -35,7 +35,7 @@ function ViewEventModal({ title, onClose, onSave, show, mainbtn, evDetails, remo
           <div>
             <div className="text-danger mb-2"><u>This is a repeating event.</u></div>
             <button onClick={() => removeRelatedEvents(evDetails.id)} title="Remove all event occurrences" className="btn btn-danger">
-              <i className="fa-solid fa-eraser" />
+              <i className="fa-solid fa-eraser pe-2" />Remove all event occurrences
             </button>
           </div>
         )}

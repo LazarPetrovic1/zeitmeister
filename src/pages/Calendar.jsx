@@ -1,10 +1,8 @@
 import { Calendar as Cal, Views, momentLocalizer } from 'react-big-calendar'
 import 'react-big-calendar/lib/css/react-big-calendar.css'
 import moment from 'moment'
-import '../calendar_overrides.css'
-import { useCallback, useState } from 'react';
-import { MultiAddModal, MultihandlerEvent, NewEventModal, ViewEventModal } from '../components';
-import useEvents from '../hooks/useEvents';
+import { useCallback, useContext, useMemo, useState } from 'react';
+import { MultiAddModal, MultihandlerEvent, NewEventModal, Spinner, ViewEventModal } from '../components';
 import {
   combineDateAndTime,
   dailyUntilEndDate,
@@ -16,6 +14,8 @@ import {
   workDaysUntilEndOfMonth
 } from '../utils';
 import useEventListener from '../hooks/useEventListener';
+import { AlertContext } from '../contexts/AlertContext';
+import { EventContext } from '../contexts/EventContext';
 let allViews = Object.keys(Views).map((k) => Views[k])
 /**
  * 
@@ -31,8 +31,8 @@ let allViews = Object.keys(Views).map((k) => Views[k])
  * 
  */
 function Calendar() {
-  // eslint-disable-next-line
-  const { events, saveEvent, removeEvent, saveManyEvents, clearEvents, removeRecurrent } = useEvents();
+  const { addAlert } = useContext(AlertContext);
+  const { events, saveEvent, removeEvent, saveManyEvents, clearEvents, removeRecurrent } = useContext(EventContext);
   const [view, setView] = useState(() => Views.MONTH);
   const [date, setDate] = useState(() => new Date());
   const [showNewModal, setShowNewModal] = useState(() => false);
@@ -46,8 +46,11 @@ function Calendar() {
   const [evDetails, setEvDetails] = useState(() => null);
   const [showMultiModal, setShowMultiModal] = useState(() => false);
   const [timetable, setTimetable] = useState(() => stepToSlots[5])
+  const presentableEvents = useMemo(() => events && Array.isArray(events) ? events.map(evt => ({ ...evt, start: parseISODate(evt.start), end: parseISODate(evt.end) })) : [], [events]);
   const localizer = momentLocalizer(moment);
   const handleKeyPress = (event) => (event.key === 'p' && event.ctrlKey) ? setShowMultiModal(() => true) : null;
+  const isLoading = !events || !Array.isArray(events);
+  console.log("ISLOADING", isLoading);
   useEventListener('keydown', handleKeyPress)
   const handleSelectEvent = useCallback((event) => {
     setEvDetails(() => event);
@@ -61,7 +64,7 @@ function Calendar() {
     setAllDay(() => s.getDate() < e.getDate())
     setShowNewModal(() => true)
   }, [])
-  const addMultiple = (newItems) => { if (newItems.length < 1) return; for (const item of newItems) { saveEvent(item) } }
+  const addMultiple = (newItems) => { if (newItems.length < 1) return; for (const item of newItems) { saveEvent(item); addAlert({ msg: "Event successfully added.", msgType: "success" }); } }
   const submitEvent = useCallback((recurrence) => {
     if (!title || !startDateTime || !endDateTime || !typeOfEvent) return;
     const fn = recurrence === "weekly" ? dailyUntilEndOfWeek :
@@ -80,6 +83,7 @@ function Calendar() {
         (This is a repeating event)`
       }))
       saveManyEvents(newEvents);
+      addAlert({ msg: "Event series successfully added.", msgType: "primary" })
     }
     if (recurrence && fn) {
       const startDates = fn(new Date(startDateTime));
@@ -96,6 +100,7 @@ function Calendar() {
         }
       })
       saveManyEvents(newEvents);
+      addAlert({ msg: "Event series successfully added.", msgType: "primary" })
     }
     if (!recurrence) {
       const id = events.length
@@ -108,7 +113,9 @@ function Calendar() {
         resource: typeOfEvent || "Other",
         description: `${description}\n(This is a repeating event)`
       };
+      // OVER HERE
       saveEvent(event);
+      addAlert({ msg: "Event successfully added.", msgType: "success" })
     }
     setTitle(() => "")
     setAllDay(() => false)
@@ -117,14 +124,16 @@ function Calendar() {
     setTypeofEvent(() => "")
     setDescription(() => "")
     setShowNewModal(() => false)
+    // eslint-disable-next-line
   }, [allDay, description, endDateTime, events.length, saveEvent, saveManyEvents, startDateTime, title, typeOfEvent])
   const removeRelatedEvents = (id) => {
     const ev = events.find(x => x.id === id);
     setShowEvDetailsModal(() => false)
     setEvDetails(() => null);
-    removeRecurrent(ev.recId)
+    removeRecurrent(ev.recId);
+    addAlert({ msg: "Event series successfully removed.", msgType: "warning" });
   }
-  return (
+  return isLoading ? <Spinner /> : (
     <div className='pb-4'>
       <div className="my-2 d-flex gap-2 justify-content-between">
         <div className="dropdown">
@@ -148,7 +157,7 @@ function Calendar() {
         </div>
         <div>
           {events.length > 0 && (
-            <button onClick={() => clearEvents()} className="btn btn-danger">
+            <button onClick={() => { clearEvents(); addAlert({ msg: "Events successfully cleared.", msgType: "success" }); }} className="btn btn-danger">
               <i className="fa-solid fa-trash-alt pe-2" />Clear events
             </button>
           )}
@@ -170,7 +179,7 @@ function Calendar() {
         localizer={localizer}
         startAccessor="start"
         endAccessor="end"
-        events={events.map(evt => ({ ...evt, start: parseISODate(evt.start), end: parseISODate(evt.end) }))}
+        events={presentableEvents}
         style={{ height: 550 }}
         view={view}
         date={date}
@@ -203,7 +212,7 @@ function Calendar() {
       <ViewEventModal
         title={evDetails?.title}
         onClose={() => setShowEvDetailsModal(() => false)}
-        onSave={() => { setShowEvDetailsModal(() => false); removeEvent(evDetails?.id) }}
+        onSave={() => { setShowEvDetailsModal(() => false); removeEvent(evDetails?.id); addAlert({ msg: "Event successfully removed.", msgType: "secondary" }); }}
         show={showEvDetailsModal}
         mainbtn={{ mainbtntext: "Remove event", mainbtntype: "danger", mainbtnicon: "trash-alt" }}
         evDetails={evDetails}

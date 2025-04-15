@@ -1,7 +1,16 @@
+import { useNavigate } from "react-router-dom";
 import Modal from "../Modal";
+import { useDebouncedCallback } from "use-debounce";
 
 function MatrixInfoModal({ onClose, onSave, show, title, evaluate }) {
-  const fn = () => { evaluate(); onClose(); }
+  const navigate = useNavigate();
+  const reload = useDebouncedCallback(() => window.location.reload(), 2500);
+  const fn = () => {
+    evaluate();
+    onClose();
+    navigate("/results");
+    reload();
+  }
   return (
     <Modal title={title} onClose={onClose} onSave={onSave} show={show}>
       <section>

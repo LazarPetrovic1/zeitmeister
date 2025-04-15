@@ -1,0 +1,42 @@
+EVENT INTERFACE
+
+{
+  id: number,
+  recId: string,
+  allDay: boolean | undefined;
+  title: React.ReactNode | undefined;
+  start: Date | undefined;
+  end: Date | undefined;
+  resource: "Work" ||
+    "Holiday" ||
+    "Free Time"  ||
+    "Paid-time off"  ||
+    "Conference" ||
+    "Transit" ||
+    "Cultural events" ||
+    "Self-improvement" ||
+    "Physical workout" ||
+    "Hobbies" ||
+    "Studying/learning" ||
+    "Other";
+  priority?: { index: number, value: "urgImp" || "nurgImp" || "urgNimp" || "nurgNimp" } || undefined;
+  position?: { x: d.x, y: d.y } || undefined;
+}
+
+URGENCY REQUESTS INTERFACE
+
+{
+  urgentImportant: Event[] <WHERE priority.index equals 0>;
+  notUrgentImportant: Event[] <WHERE priority.index equals 1>;
+  urgentNotImportant: Event[] <WHERE priority.index equals 2>;
+  notUrgentNotImportant: Event[] <WHERE priority.index equals 3>;
+  undetermined: Event[] <WHERE !priority or priority.index not in [0, 1, 2, 3]>;
+}
+
+ALERT INTERFACE
+
+{
+  msg: string;
+  msgType: string;
+  id: string | number;
+}

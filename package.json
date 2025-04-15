@@ -4,6 +4,7 @@
   "private": true,
   "author": "LazarPetrovic1",
   "description": "Your best time manager",
+  "homepage": "./",
   "main": "main.js",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
@@ -23,6 +24,7 @@
     "react-router-dom": "^7.5.0",
     "react-scripts": "5.0.1",
     "semver": "^7.7.1",
+    "use-debounce": "^10.0.4",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
@@ -46,7 +48,7 @@
     "prod": "npm run build && npm run package"
   },
   "build": {
-    "appId": "com.example.my-electron-app",
+    "appId": "com.timetracker.zeitmeister",
     "extends": null,
     "productName": "TimeTracker - Zeitmeister",
     "directories": {

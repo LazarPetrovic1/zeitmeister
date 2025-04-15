@@ -36,7 +36,7 @@ function NewEventModal({
             value={title}
           />
         </div>
-        <div className="form-check">
+        <div className="form-check mb-3">
           <input
             className="form-check-input"
             type="checkbox"
@@ -49,8 +49,8 @@ function NewEventModal({
             All/multi-day event
           </label>
         </div>
+        <h6 className="pt-1 pb-2">Duration:</h6>
         <div className="form-control">
-          <h6 className='text-end w-100'>Duration</h6>
           <article className="gap-3 pb-3 d-flex justify-content-between align-items-baseline'">
             <div>
               <label htmlFor="startDateTime">From</label>
@@ -60,6 +60,7 @@ function NewEventModal({
                 name="startDateTime"
                 id="startDateTime"
                 type="datetime-local"
+                style={{ maxWidth: "210px" }}
               />
             </div>
             <div>
@@ -70,6 +71,7 @@ function NewEventModal({
                 name="endDateTime"
                 id="endDateTime"
                 type="datetime-local"
+                style={{ maxWidth: "210px" }}
               />
             </div>
           </article>
@@ -92,6 +94,7 @@ function NewEventModal({
             <option value="Other">Other</option>
           </select>
         </div>
+        <h6 className="mt-4 pb-1">Additional comments:</h6>
         <div className="mt-3 form-floating">
           <textarea
             type="text"
@@ -105,7 +108,7 @@ function NewEventModal({
         </div>
         {!allDay && (
           <div className="my-2">
-            <h4 className="text-info"><i className="fa-solid fa-repeat pe-2" />Recurrence options <i>(repeat action)</i></h4>
+            <h4 className="text-info py-2"><i className="fa-solid fa-repeat pe-2" />Recurrence options <i>(repeat action)</i></h4>
             <div className="btn-group" role="group" aria-label="Recurrence options">
               <input type="radio" className="btn-check" name="recurrence" id="daily-end" onClick={() => setRecurrence(() => "daily")} autoComplete="off" />
               <label style={{ fontSize: "12px" }} className="btn btn-outline-primary" htmlFor="daily-end">Daily until end date</label>
