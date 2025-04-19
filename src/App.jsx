@@ -9,11 +9,9 @@ import { AlertProvider } from './contexts/AlertContext';
 import { EventProvider } from './contexts/EventContext';
 // const { ipcRenderer } = window.require('electron');
 function App() {
-  // const { lsEvents } = useEvents();
   const [isPalette, setIsPalette] = useState(() => false)
   // useEffect(() => {
-    // ipcRenderer.send('initializing', lsEvents)
-    // eslint-disable-next-line
+  //   localStorage.clear();
   // }, [])
   useEventListener("keydown", (event) => ((event.key === 'p' || event.key === "P") && event.ctrlKey && event.shiftKey) ? setIsPalette(() => true) : null)
   return (

@@ -1,6 +1,6 @@
 {
   "name": "timetracker",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "author": "LazarPetrovic1",
   "description": "Your best time manager",
@@ -65,7 +65,8 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
-    }
+    },
+    "icon": "logo.png"
   },
   "eslintConfig": {
     "extends": [

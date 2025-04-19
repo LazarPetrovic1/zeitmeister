@@ -4,13 +4,8 @@ import { useDebouncedCallback } from "use-debounce";
 
 function MatrixInfoModal({ onClose, onSave, show, title, evaluate }) {
   const navigate = useNavigate();
-  const reload = useDebouncedCallback(() => window.location.reload(), 2500);
-  const fn = () => {
-    evaluate();
-    onClose();
-    navigate("/results");
-    reload();
-  }
+  const move = useDebouncedCallback(() => navigate("/results"), 3000);
+  const fn = () => { evaluate(); onClose(); move(); }
   return (
     <Modal title={title} onClose={onClose} onSave={onSave} show={show}>
       <section>

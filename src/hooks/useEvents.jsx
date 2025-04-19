@@ -12,8 +12,8 @@ const initStateUrgency = {
 
 function useEvents(key = EVENTS_NAME) {
   const [events, setEvents] = useState(() => {
-    if (localStorage.getItem("calendarEvents"))
-      return JSON.parse(localStorage.getItem("calendarEvents"));
+    if (localStorage.getItem(key))
+      if (Array.isArray(JSON.parse(localStorage.getItem(key)))) return JSON.parse(localStorage.getItem(key));
     return [];
   });
   const [urgencyRequests, setUrgencyRequests] = useState(() => {
@@ -26,7 +26,7 @@ function useEvents(key = EVENTS_NAME) {
   useEffect(() => {
     if (events.length !== lsEvents.length) setEvents(() => lsEvents)
     if (urgencyRequests.length !== lsUrgencyRequests.length) setUrgencyRequests(() => lsUrgencyRequests);
-  }, [events.length, lsEvents.length, lsEvents, urgencyRequests, lsUrgencyRequests])
+  }, [events.length, lsEvents.length, lsEvents, urgencyRequests, urgencyRequests.length, lsUrgencyRequests, lsUrgencyRequests.length])
   const saveEvent = (evt) => {
     setEvents(prev => [...prev, evt]);
     setLsEvents((prev) => [...prev, evt]);
@@ -65,24 +65,13 @@ function useEvents(key = EVENTS_NAME) {
     const urgNimps = events.filter(evt => evt?.priority?.index === 2);
     const nurgNimps = events.filter(evt => evt?.priority?.index === 3);
     const nonAligned = events.filter(evt => !evt?.priority || !evt?.priority?.index != null || evt?.priority?.index === 4);
-    setUrgencyRequests(() => ({
-      urgentImportant: urgImps,
-      notUrgentImportant: nurgImps,
-      urgentNotImportant: urgNimps,
-      notUrgentNotImportant: nurgNimps,
-      undetermined: nonAligned
-    }));
-    setLsUrgencyRequests(() => ({
-      urgentImportant: urgImps,
-      notUrgentImportant: nurgImps,
-      urgentNotImportant: urgNimps,
-      notUrgentNotImportant: nurgNimps,
-      undetermined: nonAligned
-    }));
+    setUrgencyRequests(() => ({ urgentImportant: urgImps, notUrgentImportant: nurgImps, urgentNotImportant: urgNimps, notUrgentNotImportant: nurgNimps, undetermined: nonAligned }));
+    setLsUrgencyRequests(() => ({ urgentImportant: urgImps, notUrgentImportant: nurgImps, urgentNotImportant: urgNimps, notUrgentNotImportant: nurgNimps, undetermined: nonAligned }));
   }
   const extrapolateForRemoval = (evtIds) => {
     const filter = obj => !evtIds.includes(obj.id)
     setUrgencyRequests((prev) => ({ ...prev, notUrgentNotImportant: [] }));
+    setLsUrgencyRequests((prev) => ({ ...prev, notUrgentNotImportant: [] }));
     setEvents(prev => prev.filter(filter))
     setLsEvents(prev => prev.filter(filter))
   }

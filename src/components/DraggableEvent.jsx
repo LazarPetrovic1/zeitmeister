@@ -12,7 +12,7 @@ const DraggableEvent = ({ event, dimensions }) => {
   const { addAlert } = useContext(AlertContext);
   const [newEvent, setNewEvent] = useState(() => event);
   const { color, background } = getResourceColour(newEvent.resource)
-  const [show, setShow] = useState(false);
+  const [show, setShow] = useState(() => false);
   const [style, setStyle] = useState(() => {
     const x = event?.position?.x || floorDivide(newEvent.id) * 50 + (modulate(newEvent.id) * 50);
     const y = event?.position?.y || floorDivide(newEvent.id) * 50;
@@ -34,7 +34,7 @@ const DraggableEvent = ({ event, dimensions }) => {
   }, [dimensions, event.position, event.prio]);
   const [isDragging, setIsDragging] = useState(() => false);
   const handleDragStart = () => setIsDragging(() => true);
-  const handleDragStop = useDebouncedCallback((_, d) => {
+  const handleDragStop = (_, d) => {
     const assignment = Object.keys(dimensions).map((dim, index) => ({ index, value: dim, dims: dimensions[dim] }))
     const exact = assignment.find(as => d.x >= as.dims.left && d.x <= as.dims.right && d.y >= as.dims.top && d.y <= as.dims.bottom) || { index: 4, value: "nonAligned" };
     setNewEvent((prev) => ({ ...prev, priority: { index: exact.index, value: exact.value }, position: { x: d.x, y: d.y } }))
@@ -42,7 +42,7 @@ const DraggableEvent = ({ event, dimensions }) => {
     setStyle((prevStyle) => ({ ...prevStyle, x: d.x, y: d.y }));
     setIsDragging(() => false);
     addAlert({ msg: "Event successfully updated.", msgType: "info" });
-  }, 300)
+  }
   return (
     <>
       <Rnd

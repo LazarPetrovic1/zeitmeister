@@ -5,8 +5,8 @@ import { getPriority } from "../utils";
 
 function UrgencyAgenda() {
   const [isGenerated, setIsGenerated] = useState(() => false);
-  const { urgencyRequests } = useContext(EventContext);
-  const { urgentImportant, notUrgentImportant, urgentNotImportant, notUrgentNotImportant, undetermined } = urgencyRequests
+  const { lsUrgencyRequests } = useContext(EventContext);
+  const { urgentImportant, notUrgentImportant, urgentNotImportant, notUrgentNotImportant, undetermined } = lsUrgencyRequests
   const vals1 = getPriority(0);
   const vals2 = getPriority(1);
   const vals3 = getPriority(2);

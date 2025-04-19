@@ -38,7 +38,7 @@ function CommandPalette({ description, show, onClose }) {
           {commands.filter(filter).map((cmd, i) => {
             const action = () => { navigate(cmd.route); onClose(); }
             return (
-              <div key={i} role="button" onClick={action}>
+              <div key={i} role="button" onClick={action} className="command-suggestion">
                 <hr className="my-1" />
                 <span className="badge">{cmd.name}</span>&nbsp;
                 <small><i>{cmd.description}</i></small>
