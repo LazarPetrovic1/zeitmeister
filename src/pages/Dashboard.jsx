@@ -103,8 +103,7 @@ function Dashboard() {
   // ---------- UI ----------
   return (
     <div className="container py-3">
-      <h2 className="text-center mb-4">Dashboard</h2>
-
+      <h1 className="text-primary text-center mb-4">Dashboard</h1>
       <div className="row g-3">
 
         {/* WEEK EVENTS */}
