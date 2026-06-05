@@ -26,6 +26,9 @@ function Nav() {
               <Link className={`nav-link ${pathname === "/" ? "active" : ""}`} aria-current="page" to="/"><i className="fa-solid fa-house-chimney pe-2" />Home</Link>
             </li>
             <li className="nav-item">
+              <Link className={`nav-link ${pathname === "/dashboard" ? "active" : ""}`} aria-current="page" to="/dashboard">        <i className="fa-solid fa-chart-line me-2" />Dashboard</Link>
+            </li>
+            <li className="nav-item">
               <Link className={`nav-link ${pathname === "/calendar" ? "active" : ""}`} to="/calendar"><i className="fa-solid fa-calendar-week pe-2" />Calendar</Link>
             </li>
             <li className="nav-item">

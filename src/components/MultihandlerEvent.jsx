@@ -8,10 +8,6 @@ function MultihandlerEvent({ event }) {
   if (event.allDay) className += " rbc-event-allday"
   
   return (
-    // <div className={`rbc-event ${event.allDay ? "rbc-event-allday" : ""} ${resource}`}>
-    //   <div className={`rbc-event-label ${resource}`}>{startTime} - {endTime}</div>
-    //   <div className={`rbc-event-content ${resource}`} title={event.title}>{event.title}</div>
-    // </div>
     <div
       role="button"
       tabIndex={0}

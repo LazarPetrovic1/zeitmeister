@@ -112,6 +112,7 @@ export function parseISODate(isoString) {
 
   return date;
 }
+
 export function combineDateAndTime(dates) {
   const start = new Date(dates.start), end = new Date(dates.end)
   // Extract the date parts from the first date
@@ -134,8 +135,8 @@ export function dailyUntilEndDate(startDate, endDate) {
   let dates = [];
   let currentDate = new Date(startDate);
   while (currentDate <= endDate) {
-      dates.push(getFormattedDate(currentDate));
-      currentDate.setDate(currentDate.getDate() + 1);
+    dates.push(getFormattedDate(currentDate));
+    currentDate.setDate(currentDate.getDate() + 1);
   }
   return dates.map(d => new Date(d));
 }
@@ -182,10 +183,10 @@ export function workDaysUntilEndOfMonth(startDate) {
   let currentDate = new Date(startDate);
   let lastDayOfMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
   while (currentDate <= lastDayOfMonth) {
-      if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) { // Exclude Sunday (0) and Saturday (6)
-          dates.push(getFormattedDate(currentDate));
-      }
-      currentDate.setDate(currentDate.getDate() + 1);
+    if (currentDate.getDay() !== 0 && currentDate.getDay() !== 6) { // Exclude Sunday (0) and Saturday (6)
+      dates.push(getFormattedDate(currentDate));
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
   }
   return dates.map(d => new Date(d));
 }
@@ -200,38 +201,27 @@ export const stepToSlots = [
   { step: 45, timeslots: 3, value: 6 },
   { step: 60, timeslots: 2, value: 7 }
 ];
+
 export const getPriority = (lv) => {
   switch (lv) {
-    case 0:
-      return { txt: "Urgent and important", color: "rgb(255, 0, 0)" }
-    case 1:
-      return { txt: "Not urgent, but important", color: "rgb(85, 73, 255)" }
-    case 2:
-      return { txt: "Urgent, but not important", color: "rgb(255, 255, 0)" }
-    case 3:
-      return { txt: "Neither urgent nor important", color: "rgb(100, 100, 100)" }
-    default:
-      return { txt: "Priority inconclusive", color: "rgb(150, 150, 150)" }
+    case 0: return { txt: "Urgent and important", color: "rgb(255, 0, 0)" }
+    case 1: return { txt: "Not urgent, but important", color: "rgb(85, 73, 255)" }
+    case 2: return { txt: "Urgent, but not important", color: "rgb(255, 255, 0)" }
+    case 3: return { txt: "Neither urgent nor important", color: "rgb(100, 100, 100)" }
+    default: return { txt: "Priority inconclusive", color: "rgb(150, 150, 150)" }
   }
 }
 export const getPrioColours = (lv) => {
   switch (lv) {
-    case 0:
-      return { color: "white", background: "rgb(255, 0, 0)" }
-    case 1:
-      return { color: "white", background: "rgb(0, 0, 255)" }
-    case 2:
-      return { color: "black", background: "rgb(255, 255, 0)" }
-    case 3:
-      return { color: "white", background: "rgb(100, 100, 100)" }
-    default:
-      return { color: "black", background: "rgb(150, 150, 150)" }
+    case 0: return { color: "white", background: "rgb(255, 0, 0)" }
+    case 1: return { color: "white", background: "rgb(0, 0, 255)" }
+    case 2: return { color: "black", background: "rgb(255, 255, 0)" }
+    case 3: return { color: "white", background: "rgb(100, 100, 100)" }
+    default: return { color: "black", background: "rgb(150, 150, 150)" }
   }
 }
 export function floorDivide(numerator, denominator = 10) {
-  if (denominator === 0) {
-    throw new Error('Denominator cannot be zero');
-  }
+  if (denominator === 0) throw new Error('Denominator cannot be zero');
   return Math.floor(numerator / denominator);
 }
 
@@ -252,3 +242,158 @@ export const checkClientRect = (item1, rect2) => {
   ) return true;
   return false;
 }
+
+export const getAbsolutePosition = (relativePosition, priority, dimensions) => {
+  if (!relativePosition) return null;
+  const rect = dimensions?.[priority?.value];
+  if (!rect) return null;
+  return {
+    x: rect.left + rect.width * relativePosition.x,
+    y: rect.top + rect.height * relativePosition.y
+  };
+};
+
+export const generateUrgencyCsv = (urgencyRequests) => {
+  const {
+    urgentImportant = [],
+    notUrgentImportant = [],
+    urgentNotImportant = [],
+    notUrgentNotImportant = [],
+    undetermined = []
+  } = urgencyRequests;
+  const rows = [];
+  rows.push(["Category", "Id", "Title", "Description", "Start", "End"]);
+  const appendEvents = (category, events) => {
+    for (const evt of events) {
+      rows.push([
+        category,
+        evt.id ?? "",
+        evt.title ?? evt.name ?? "",
+        evt.description ?? "",
+        evt.start ? new Date(evt.start).toLocaleString() : "",
+        evt.end ? new Date(evt.end).toLocaleString() : ""
+      ]);
+    }
+  };
+
+  appendEvents("Urgent & Important", urgentImportant);
+  appendEvents("Important Not Urgent", notUrgentImportant);
+  appendEvents("Urgent Not Important", urgentNotImportant);
+  appendEvents("Not Urgent Not Important", notUrgentNotImportant);
+  appendEvents("Undetermined", undetermined);
+
+  const csv = rows.map(row => row.map(value =>`"${String(value).replace(/"/g, '""')}"`).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  link.href = url;
+  link.download = `urgency-report-${timestamp}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+export const generateUrgencyMarkdown = (urgencyRequests) => {
+  const {
+    urgentImportant = [],
+    notUrgentImportant = [],
+    urgentNotImportant = [],
+    notUrgentNotImportant = [],
+    undetermined = []
+  } = urgencyRequests;
+
+  const formatRow = (evt) => [
+    evt.id ?? "",
+    evt.title ?? evt.name ?? "",
+    evt.description ?? "",
+    evt.start ? new Date(evt.start).toLocaleString() : "",
+    evt.end ? new Date(evt.end).toLocaleString() : ""
+  ];
+
+  const buildTable = (title, events) => {
+    let md = `## ${title}\n\n`;
+    md += `| ID | Title | Description | Start | End |\n`;
+    md += `|----|-------|-------------|-------|-----|\n`;
+
+    for (const evt of events) {
+      const row = formatRow(evt)
+        .map(v => String(v).replace(/\|/g, "\\|"));
+      md += `| ${row.join(" | ")} |\n`;
+    }
+
+    md += `\n`;
+    return md;
+  };
+
+  let markdown = `# Urgency Report\n\nGenerated: ${new Date().toLocaleString()}\n\n`;
+
+  markdown += buildTable("Urgent & Important", urgentImportant);
+  markdown += buildTable("Important Not Urgent", notUrgentImportant);
+  markdown += buildTable("Urgent Not Important", urgentNotImportant);
+  markdown += buildTable("Not Urgent Not Important", notUrgentNotImportant);
+  markdown += buildTable("Undetermined", undetermined);
+
+  const blob = new Blob([markdown], { type: "text/markdown;charset=utf-8;" });
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+
+  link.href = url;
+  link.download = `urgency-report-${timestamp}.md`;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};
+
+export const generateUrgencyJson = (urgencyRequests) => {
+  const {
+    urgentImportant = [],
+    notUrgentImportant = [],
+    urgentNotImportant = [],
+    notUrgentNotImportant = [],
+    undetermined = []
+  } = urgencyRequests;
+
+  const exportData = {
+    generatedAt: new Date().toISOString(),
+    categories: {
+      urgentImportant,
+      notUrgentImportant,
+      urgentNotImportant,
+      notUrgentNotImportant,
+      undetermined
+    },
+    summary: {
+      total:
+        urgentImportant.length +
+        notUrgentImportant.length +
+        urgentNotImportant.length +
+        notUrgentNotImportant.length +
+        undetermined.length
+    }
+  };
+
+  const json = JSON.stringify(exportData, null, 2);
+
+  const blob = new Blob([json], {
+    type: "application/json;charset=utf-8;"
+  });
+
+  const url = URL.createObjectURL(blob);
+
+  const link = document.createElement("a");
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+
+  link.href = url;
+  link.download = `urgency-report-${timestamp}.json`;
+
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+};

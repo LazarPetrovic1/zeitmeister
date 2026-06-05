@@ -5,8 +5,8 @@ import { getPriority } from "../utils";
 
 function UrgencyAgenda() {
   const [isGenerated, setIsGenerated] = useState(() => false);
-  const { lsUrgencyRequests } = useContext(EventContext);
-  const { urgentImportant, notUrgentImportant, urgentNotImportant, notUrgentNotImportant, undetermined } = lsUrgencyRequests
+  const { urgencyRequests } = useContext(EventContext);
+  const { urgentImportant, notUrgentImportant, urgentNotImportant, notUrgentNotImportant, undetermined } = urgencyRequests
   const vals1 = getPriority(0);
   const vals2 = getPriority(1);
   const vals3 = getPriority(2);
@@ -46,7 +46,7 @@ function UrgencyAgenda() {
           </div>
         )}
         <button onClick={() => setIsGenerated(() => true)} className="btn btn-primary w-100 mt-3">
-          <i className="fa-solid fa-file-contract pe-2" />Generate
+          <i className="fa-solid fa-file-contract pe-2" /> View report
         </button>
       </section>
       <UrgencyReportModal

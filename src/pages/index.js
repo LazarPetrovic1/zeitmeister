@@ -4,6 +4,7 @@ import PatchNotes from "./PatchNotes";
 import Calendar from "./Calendar";
 import UIMatrix from "./UIMatrix";
 import UrgencyAgenda from "./UrgencyAgenda";
+import Dashboard from "./Dashboard";
 import { CALC_HEIGHT_MINUS } from "../utils";
 
 /**
@@ -34,4 +35,4 @@ export const uimatrix = {
 }
 
 
-export { Welcome, About, PatchNotes, Calendar, UIMatrix, UrgencyAgenda }
+export { Welcome, About, PatchNotes, Calendar, UIMatrix, UrgencyAgenda, Dashboard }

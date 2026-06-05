@@ -44,7 +44,7 @@ function UIMatrix() {
       checkClientRect(urgNimp.current, dimensions ? dimensions?.urgNimp : null) &&
       checkClientRect(nurgNimp.current, dimensions ? dimensions?.nurgNimp : null);
       if (urgImp.current && nurgImp.current && urgNimp.current && nurgNimp.current) {
-        if (fullCondition)
+        if (!fullCondition)
           setDimensions(() => ({
             urgImp: urgImp.current?.getBoundingClientRect(),
             nurgImp: nurgImp.current?.getBoundingClientRect(),
@@ -53,7 +53,7 @@ function UIMatrix() {
           }));
         }
       // eslint-disable-next-line
-  }, [urgImp, nurgImp, urgNimp, nurgNimp, dimensions])
+  }, [dimensions]) // urgImp.current, nurgImp.current, urgNimp.current, nurgNimp.current
   return isLoading ? (
     <Spinner />
   ) : (

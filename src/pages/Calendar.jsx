@@ -32,7 +32,16 @@ let allViews = Object.keys(Views).map((k) => Views[k])
  */
 function Calendar() {
   const { addAlert } = useContext(AlertContext);
-  const { events, saveEvent, removeEvent, saveManyEvents, clearEvents, removeRecurrent } = useContext(EventContext);
+  const {
+    removePastEvents,
+    removeCompletedEvents,
+    events,
+    saveEvent,
+    removeEvent,
+    saveManyEvents,
+    clearEvents,
+    removeRecurrent
+  } = useContext(EventContext);
   const [view, setView] = useState(() => Views.MONTH);
   const [date, setDate] = useState(() => new Date());
   const [showNewModal, setShowNewModal] = useState(() => false);
@@ -50,7 +59,6 @@ function Calendar() {
   const localizer = momentLocalizer(moment);
   const handleKeyPress = (event) => (event.key === 'p' && event.ctrlKey) ? setShowMultiModal(() => true) : null;
   const isLoading = !events || !Array.isArray(events);
-  console.log("ISLOADING", isLoading);
   useEventListener('keydown', handleKeyPress)
   const handleSelectEvent = useCallback((event) => {
     setEvDetails(() => event);
@@ -64,7 +72,15 @@ function Calendar() {
     setAllDay(() => s.getDate() < e.getDate())
     setShowNewModal(() => true)
   }, [])
-  const addMultiple = (newItems) => { if (newItems.length < 1) return; for (const item of newItems) { saveEvent(item); addAlert({ msg: "Event successfully added.", msgType: "success" }); } }
+  const addMultiple = (newItems) => {
+    if (newItems.length < 1) return;
+    saveManyEvents(newItems);
+    addAlert({ msg: "Event series successfully added.", msgType: "primary" })
+    // for (const item of newItems) {
+    //   saveEvent(item);
+    //   addAlert({ msg: "Event successfully added.", msgType: "success" });
+    // }
+  }
   const submitEvent = useCallback((recurrence) => {
     if (!title || !startDateTime || !endDateTime || !typeOfEvent) return;
     const fn = recurrence === "weekly" ? dailyUntilEndOfWeek :
@@ -73,37 +89,39 @@ function Calendar() {
       recurrence === "workmonth" ? workDaysUntilEndOfMonth : null;
     if (recurrence === "daily") {
       const startDates = dailyUntilEndDate(new Date(startDateTime), new Date(endDateTime));
-      let len = events.length;
       const newEvents = startDates.map((sd, i) => ({
-        id: len + i,
+        id: crypto.randomUUID(),
         title, allDay, start: new Date(sd),
         end: new Date(combineDateAndTime({ start: new Date(sd), end: new Date(endDateTime) })),
         resource: typeOfEvent || "Other",
         description: `${description}
-        (This is a repeating event)`
+        (This is a repeating event)`,
+        completed: false,
+        completedAt: null
       }))
       saveManyEvents(newEvents);
       addAlert({ msg: "Event series successfully added.", msgType: "primary" })
     }
     if (recurrence && fn) {
       const startDates = fn(new Date(startDateTime));
-      let len = events.length;
       const newEvents = startDates.map((sd, i) => {
         const end = new Date(combineDateAndTime({ start: new Date(sd), end: new Date(endDateTime) }));
         return {
-          id: len + i, end,
+          id: crypto.randomUUID(), end,
           title, allDay,
           start: new Date(sd),
           resource: typeOfEvent || "Other",
           description: `${description}
-          (This is a repeating event)`
+          (This is a repeating event)`,
+          completed: false,
+          completedAt: null
         }
       })
       saveManyEvents(newEvents);
       addAlert({ msg: "Event series successfully added.", msgType: "primary" })
     }
     if (!recurrence) {
-      const id = events.length
+      const id = crypto.randomUUID();
       const event = {
         id,
         title,
@@ -111,9 +129,10 @@ function Calendar() {
         start: new Date(startDateTime),
         end: new Date(endDateTime),
         resource: typeOfEvent || "Other",
-        description: `${description}\n(This is a repeating event)`
+        description: `${description}\n(This is a repeating event)`,
+        completed: false,
+        completedAt: null
       };
-      // OVER HERE
       saveEvent(event);
       addAlert({ msg: "Event successfully added.", msgType: "success" })
     }
@@ -157,9 +176,17 @@ function Calendar() {
         </div>
         <div>
           {events.length > 0 && (
-            <button onClick={() => { clearEvents(); addAlert({ msg: "Events successfully cleared.", msgType: "success" }); }} className="btn btn-danger">
-              <i className="fa-solid fa-trash-alt pe-2" />Clear events
-            </button>
+            <>
+              <button onClick={() => { clearEvents(); addAlert({ msg: "Events successfully cleared.", msgType: "success" }); }} className="btn btn-danger">
+                <i className="fa-solid fa-trash-alt pe-2" /> Clear events
+              </button>
+              <button onClick={() => { removePastEvents(); addAlert({ msg: "Past events removed.", msgType: "warning" }); }} className="btn btn-outline-warning ms-2">
+                <i className="fa-solid fa-clock-rotate-left pe-2" /> Remove past
+              </button>
+              <button onClick={() => { removeCompletedEvents(); addAlert({ msg: "Completed events removed.", msgType: "info" }); }} className="btn btn-outline-info mx-2">
+                <i className="fa-solid fa-check-double pe-2" /> Remove completed
+              </button>
+            </>
           )}
           <button onClick={() => setShowNewModal(() => true)} className="btn btn-primary">
             <i className="fa-solid fa-calendar-week pe-2" />New Event
@@ -222,7 +249,6 @@ function Calendar() {
         show={showMultiModal}
         onClose={() => setShowMultiModal(() => false)}
         onSave={addMultiple}
-        lslen={events.length}
         mainbtn={{ mainbtntext: "Save changes", mainbtntype: "primary", mainbtnicon: "floppy-disk" }}
         title="Add multiple events feature (DEV ONLY)"
       />

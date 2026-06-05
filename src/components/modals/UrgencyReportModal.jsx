@@ -1,7 +1,8 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { EventContext } from "../../contexts/EventContext";
 import Modal from "../Modal";
 import List from "../List";
+import { generateUrgencyCsv, generateUrgencyJson, generateUrgencyMarkdown } from "../../utils";
 
 /**
  * 
@@ -10,11 +11,18 @@ import List from "../List";
 **/
 
 function UrgencyReportModal({ show, onSave, onClose, title }) {
+  const [format, setFormat] = useState(() => "csv");
   const { urgencyRequests, extrapolateForRemoval } = useContext(EventContext);
   const { urgentImportant, notUrgentImportant, urgentNotImportant, notUrgentNotImportant, undetermined } = urgencyRequests
   const removeUselessData = () => {
     const ids = notUrgentNotImportant.map(x => x.id)
     extrapolateForRemoval(ids);
+  }
+  const generateDocument = () => {
+    if (format.toLowerCase() === "csv") generateUrgencyCsv(urgencyRequests)
+    else if (format.toLowerCase() === "md") generateUrgencyMarkdown(urgencyRequests)
+    else if (format.toLowerCase() === "json") generateUrgencyJson(urgencyRequests)
+    else return;
   }
   return (
     <Modal show={show} onSave={onSave} onClose={onClose} title={title}>
@@ -42,6 +50,19 @@ function UrgencyReportModal({ show, onSave, onClose, title }) {
         <div className="my-2">
           <h4 className="text-light">These events are unknown, and neither are their urgency or importance.</h4>
           <List level={4} items={undetermined} failText="Nothing else here. Great job!" />
+        </div>
+        <div>
+          <p className="mt-3">Generate report</p>
+          <div className="my-2 d-flex">
+            <button style={{ flex: 2 }} onClick={generateDocument} className="btn btn-primary">
+              <i className="fa-solid fa-book pe-2" /> Generate {format.toUpperCase()}
+            </button>
+            <select style={{ flex: 1 }} name="format" value={format} onChange={(e) => setFormat(() => e.target.value)} className="form-select" aria-label="Generate report">
+              <option value="csv">CSV</option>
+              <option value="json">JSON</option>
+              <option value="md">MD</option>
+            </select>
+          </div>
         </div>
       </section>
     </Modal>

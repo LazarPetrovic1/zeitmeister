@@ -9,18 +9,19 @@ export const multiEventAddRegex = new RegExp(
   "g"
 );
 
-function MultiAddModal({ title, onClose, show, onSave, mainbtn, lslen }) {
-  const placeholder = `There are currently ${lslen} events, so the next id is ${lslen}.
-Remove these sentences and add as many events as necessary, while following JSON rules. 
+function MultiAddModal({ title, onClose, show, onSave, mainbtn }) {
+  const placeholder = `Remove this sentence and add as many events as necessary, while following JSON rules.
 [
   {
-    id: ${lslen},
+    id: ${crypto.randomUUID()},
     title: string,
     allDay: boolean,
     start: Date,
     end: Date,
     resource: type of event (exactly as in the dropdown)
-    description: multi-line string
+    description: multi-line string,
+    completed: boolean (auto-gen),
+    completedAt: Date (auto-gen)
   }
 ]`;
   const [newItems, setNewItems] = useState(() => placeholder);

@@ -1,6 +1,6 @@
-import { HashRouter as Router , Routes as Switch, Route } from 'react-router-dom';
+import { HashRouter as Router, Routes as Switch, Route } from 'react-router-dom';
 import { AlertContainer, CommandPalette, Nav } from './components';
-import { About, Calendar, PatchNotes, UIMatrix, UrgencyAgenda, Welcome } from './pages';
+import { About, Calendar, Dashboard, PatchNotes, UIMatrix, UrgencyAgenda, Welcome } from './pages';
 import { CALC_HEIGHT_MINUS } from './utils';
 // import useEvents from './hooks/useEvents';
 import { useState } from 'react';
@@ -13,7 +13,7 @@ function App() {
   // useEffect(() => {
   //   localStorage.clear();
   // }, [])
-  useEventListener("keydown", (event) => ((event.key === 'p' || event.key === "P") && event.ctrlKey && event.shiftKey) ? setIsPalette(() => true) : null)
+  useEventListener("keydown", (event) => ((event.key === 'p' || event.key === "P") && event.altKey) ? setIsPalette(() => true) : null)
   return (
     <EventProvider>
       <AlertProvider>
@@ -22,6 +22,7 @@ function App() {
           <div className="container-fluid" style={{ height: `calc(100vh - ${CALC_HEIGHT_MINUS}px)` }}>
             <Switch>
               <Route path='/' element={<Welcome />} />
+              <Route path='/dashboard' element={<Dashboard />} />
               <Route path='/about' element={<About />} />
               <Route path='/patch-notes' element={<PatchNotes />} />
               <Route path='/calendar' element={<Calendar />} />

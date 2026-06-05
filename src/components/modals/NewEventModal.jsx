@@ -45,9 +45,7 @@ function NewEventModal({
             id="allDay"
             onChange={() => setAllDay((prev) => !prev)}
           />
-          <label className="form-check-label" htmlFor="allDay">
-            All/multi-day event
-          </label>
+          <label className="form-check-label" htmlFor="allDay">All/multi-day event</label>
         </div>
         <h6 className="pt-1 pb-2">Duration:</h6>
         <div className="form-control">

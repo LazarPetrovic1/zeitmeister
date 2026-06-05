@@ -11,9 +11,13 @@ export function useSessionStorage(key, defaultValue) {
 function useStorage(key, defaultValue, storageObject) {
   const [value, setValue] = useState(() => {
     const jsonValue = storageObject.getItem(key);
-    if (jsonValue != null) return JSON.parse(jsonValue).map(v => ({ ...v, start: new Date(v.start), end: new Date(v.end) })); // this is always an array
-    if (typeof defaultValue === 'function') return defaultValue();
-    else return defaultValue;
+    const parsed = JSON.parse(jsonValue);
+    if (Array.isArray(parsed))
+      return parsed.map(v => ({ ...v, start: new Date(v.start), end: new Date(v.end) }));
+    return parsed;
+    // if (jsonValue != null) return JSON.parse(jsonValue).map(v => ({ ...v, start: new Date(v.start), end: new Date(v.end) })); // this is always an array
+    // if (typeof defaultValue === 'function') return defaultValue();
+    // else return defaultValue;
   });
 
   useEffect(() => {

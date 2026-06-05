@@ -1,18 +1,25 @@
+import { useContext, useEffect, useState } from "react";
 import { evtdate, getDuration } from "../../utils";
 import Modal from "../Modal";
 import ResourceText from "../ResourceText";
+import { EventContext } from "../../contexts/EventContext";
+import { AlertContext } from "../../contexts/AlertContext";
 
 function ViewEventModal({ title, onClose, onSave, show, mainbtn, evDetails, removeRelatedEvents }) {
+  console.log("EV DETAILS", evDetails);
   const isRecurring = evDetails?.description.includes("(This is a repeating event)");
-  
+  const { updateEvent } = useContext(EventContext);
+  const { addAlert } = useContext(AlertContext);
+  const [checked, setChecked] = useState(() => !!evDetails?.completed)
+  useEffect(() => { setChecked(() => !!evDetails?.completed) }, [evDetails?.completed]);
+  const completeEvt = () => {
+    const next = !checked;
+    setChecked(() => next);
+    updateEvent(evDetails.id, { ...evDetails, completed: next, completedAt: next ? new Date() : null });
+    addAlert({ msg: `Event ${next ? "completed" : "uncompleted"}.`, msgType: next ? "success" : "info" });
+  };
   return (
-    <Modal
-      title={title}
-      onClose={onClose}
-      onSave={onSave}
-      show={show}
-      mainbtn={mainbtn}
-    >
+    <Modal title={title} onClose={onClose} onSave={onSave} show={show} mainbtn={mainbtn}>
       <section>
         <div className="my-2">
           {evDetails?.start && evDetails?.end && (
@@ -30,6 +37,17 @@ function ViewEventModal({ title, onClose, onSave, show, mainbtn, evDetails, remo
         </div>
         <div className="my-2">
           <ResourceText resource={evDetails?.resource} />
+        </div>
+        <div>
+          <input
+            type="checkbox"
+            name="completion"
+            id="completion"
+            autoComplete="off"
+            checked={!!checked}
+            onChange={completeEvt}
+          />
+          <label htmlFor="completion">{checked ? "Complete" : "Incomplete"}</label>
         </div>
         {isRecurring && (
           <div>

@@ -1,97 +1,80 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useLocalStorage } from "./useStorage";
 import { EVENTS_NAME } from '../utils'
 
-const initStateUrgency = {
-  urgentImportant: [],
-  notUrgentImportant: [],
-  urgentNotImportant: [],
-  notUrgentNotImportant: [],
-  undetermined: []
-}
-
 function useEvents(key = EVENTS_NAME) {
-  const [events, setEvents] = useState(() => {
-    if (localStorage.getItem(key))
-      if (Array.isArray(JSON.parse(localStorage.getItem(key)))) return JSON.parse(localStorage.getItem(key));
-    return [];
-  });
-  const [urgencyRequests, setUrgencyRequests] = useState(() => {
-    if (localStorage.getItem(`${key}Urgency`))
-      return JSON.parse(localStorage.getItem(`${key}Urgency`));
-    return initStateUrgency;
-  });
-  const [lsUrgencyRequests, setLsUrgencyRequests] = useState(`${key}Urgency`, initStateUrgency);
-  const [lsEvents, setLsEvents, removelsEvents] = useLocalStorage(key, []);
+  const [events, setEvents, removeLsEvents] = useLocalStorage(EVENTS_NAME, []);
+  const urgencyRequests = useMemo(() => {
+    const grouped = {
+      urgentImportant: [],
+      notUrgentImportant: [],
+      urgentNotImportant: [],
+      notUrgentNotImportant: [],
+      undetermined: []
+    };
+    for (const evt of events) {
+      switch (evt?.priority?.index) {
+        case 0: grouped.urgentImportant.push(evt); break;
+        case 1: grouped.notUrgentImportant.push(evt); break;
+        case 2: grouped.urgentNotImportant.push(evt); break;
+        case 3: grouped.notUrgentNotImportant.push(evt); break;
+        default: grouped.undetermined.push(evt); break;
+      }
+    }
+    return grouped;
+  }, [events]);
   useEffect(() => {
-    if (events.length !== lsEvents.length) setEvents(() => lsEvents)
-    if (urgencyRequests.length !== lsUrgencyRequests.length) setUrgencyRequests(() => lsUrgencyRequests);
-  }, [events.length, lsEvents.length, lsEvents, urgencyRequests, urgencyRequests.length, lsUrgencyRequests, lsUrgencyRequests.length])
-  const saveEvent = (evt) => {
-    setEvents(prev => [...prev, evt]);
-    setLsEvents((prev) => [...prev, evt]);
-  }
-  const saveManyEvents = (evts) => {
-    const recurrentId = crypto.randomUUID();
-    const events = evts.map(evt => ({ ...evt, recId: recurrentId }))
-    for (const evt of events) saveEvent(evt);
-  }
-  const removeEvent = (evtId) => {
-    setEvents(prev => prev.filter(item => item.id !== evtId));
-    setLsEvents(prev => prev.filter(item => item.id !== evtId));
-  }
-  const removeRecurrent = (recId) => {
-    const filter = (evt) => evt.recId !== recId;
-    setEvents(prev => prev.filter(filter));
-    setLsEvents(prev => prev.filter(filter));
-  }
-  const clearEvents = () => {
-    setEvents(() => []);
-    setLsEvents(() => []);
-  }
-  const updateEvent = (id, newEvent) => {
-    const mapper = (evt) => evt.id === id ? newEvent : evt
-    setEvents(prev => prev.map(mapper));
-    setLsEvents(prev => prev.map(mapper));
-  }
-  const updateRecurrent = (recId, newEvent) => {
-    const mapper = (evt) => evt.recId === recId ? ({ ...newEvent, start: evt.start, end: evt.end }) : evt;
-    setEvents(prev => prev.map(mapper));
-    setLsEvents(prev => prev.map(mapper));
-  }
-  const evaluateEvents = () => {
-    const urgImps = events.filter(evt => evt?.priority?.index === 0);
-    const nurgImps = events.filter(evt => evt?.priority?.index === 1);
-    const urgNimps = events.filter(evt => evt?.priority?.index === 2);
-    const nurgNimps = events.filter(evt => evt?.priority?.index === 3);
-    const nonAligned = events.filter(evt => !evt?.priority || !evt?.priority?.index != null || evt?.priority?.index === 4);
-    setUrgencyRequests(() => ({ urgentImportant: urgImps, notUrgentImportant: nurgImps, urgentNotImportant: urgNimps, notUrgentNotImportant: nurgNimps, undetermined: nonAligned }));
-    setLsUrgencyRequests(() => ({ urgentImportant: urgImps, notUrgentImportant: nurgImps, urgentNotImportant: urgNimps, notUrgentNotImportant: nurgNimps, undetermined: nonAligned }));
-  }
-  const extrapolateForRemoval = (evtIds) => {
-    const filter = obj => !evtIds.includes(obj.id)
-    setUrgencyRequests((prev) => ({ ...prev, notUrgentNotImportant: [] }));
-    setLsUrgencyRequests((prev) => ({ ...prev, notUrgentNotImportant: [] }));
-    setEvents(prev => prev.filter(filter))
-    setLsEvents(prev => prev.filter(filter))
-  }
+    localStorage.setItem(`${key}Urgency`, JSON.stringify(urgencyRequests));
+  }, [key, urgencyRequests]);
+  const saveEvent = useCallback((evt) => {
+    const prepared = { ...evt, id: evt.id ?? crypto.randomUUID() };
+    setEvents(prev => [...prev, prepared]);
+  }, [setEvents]);
+  const saveManyEvents = useCallback((evts) => {
+    const recId = crypto.randomUUID();
+    const prepared = evts.map(evt => ({ ...evt, id: evt.id ?? crypto.randomUUID(), recId }));
+    setEvents(prev => [...prev, ...prepared]);
+  }, [setEvents]);
+  const removeEvent = useCallback((evtId) => { setEvents(prev => prev.filter(evt => evt.id !== evtId) ); }, [setEvents]);
+  const removeRecurrent = useCallback((recId) => { setEvents(prev => prev.filter(evt => evt.recId !== recId) ); }, [setEvents]);
+  const clearEvents = useCallback(() => { setEvents(() => []); }, [setEvents]);
+  const updateEvent = useCallback((id, newEvent) => {
+    console.log("UPDATE EVENT DATA", { id, newEvent });
+    setEvents(prev => prev.map(evt => evt.id === id ? newEvent : evt ));
+  }, [setEvents]);
+  const updateRecurrent = useCallback((recId, newEvent) => {
+    setEvents(prev => prev.map(evt => evt.recId === recId ? {
+      ...newEvent, id: evt.id, recId: evt.recId, start: evt.start, end: evt.end
+    } : evt));
+  }, [setEvents]);
+
+  const evaluateEvents = useCallback(() => { return urgencyRequests; }, [urgencyRequests]);
+  const extrapolateForRemoval = useCallback((evtIds) => { setEvents(prev => prev.filter(evt => !evtIds.includes(evt.id)) ); }, [setEvents]);
+
+  const removePastEvents = () => {
+    const now = Date.now();
+    setEvents(prev => prev.filter(ev => new Date(ev.end).getTime() >= now));
+  };
+
+  const removeCompletedEvents = () => setEvents(prev => prev.filter(ev => !ev.completed));
+
   return {
     events,
     setEvents,
     saveEvent,
-    removeEvent,
-    lsEvents,
-    removelsEvents,
     saveManyEvents,
-    clearEvents,
+    removeEvent,
     removeRecurrent,
+    clearEvents,
     updateEvent,
     updateRecurrent,
+    extrapolateForRemoval,
     evaluateEvents,
     urgencyRequests,
-    lsUrgencyRequests,
-    extrapolateForRemoval
-  }
+    removeLsEvents,
+    removePastEvents,
+    removeCompletedEvents
+  };
 }
 
 export default useEvents;
