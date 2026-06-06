@@ -58,7 +58,7 @@ function UIMatrix() {
     <Spinner />
   ) : (
     <div style={fullpage} className="d-flex flex-wrap">
-      {events.map((evt, i) => (<DraggableEvent dimensions={dimensions} event={evt} key={i} index={i} />))}
+      {events.map((evt, i) => (<DraggableEvent dimensions={dimensions} event={evt} key={evt.id} index={i} />))}
       <button onClick={() => setShowInfo(() => true)} className="btn position-absolute btn-dark" style={center}><i className="fa-solid fa-circle-info" /></button>
       <div ref={urgImp} className={`d-flex justify-content-end align-items-end p-0 pe-1 trans`} style={{ ...square, fontSize: "1.3rem", ...urgimp }}>Urgent and important</div>
       <div ref={nurgImp} className={`d-flex align-items-end p-0 ps-1 trans`} style={{ ...square, fontSize: "1.3rem", ...nurgimp }}>Important, but not urgent</div>

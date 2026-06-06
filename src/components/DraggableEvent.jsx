@@ -8,21 +8,20 @@ import { useDebouncedCallback } from "use-debounce";
 
 const DraggableEvent = ({ event, dimensions }) => {
   // The dimensions variable are the DOMRects from the quadrants being passed
-  const { updateEvent } = useContext(EventContext);
+  const { updateEvent, events } = useContext(EventContext);
   const { addAlert } = useContext(AlertContext);
   const { color, background } = getResourceColour(event.resource)
   const [show, setShow] = useState(() => false);
-  // const [style, setStyle] = useState(() => {
-  //   const x = event?.position?.x || floorDivide(event.id) * 50 + (modulate(event.id) * 50);
-  //   const y = event?.position?.y || floorDivide(event.id) * 50;
-  //   return { width: 50, height: 50, x, y }
-  // });
   const [style, setStyle] = useState(() => ({
     width: 50,
     height: 50,
     x: event.position?.x ?? 0,
     y: event.position?.y ?? 0
   }));
+  useEffect(() => {
+    if (Number.isFinite(event.position?.x) && Number.isFinite(event.position?.y))
+      setStyle(prev => ({ ...prev, x: event.position.x, y: event.position.y }));
+  }, [event.position?.x, event.position?.y]);
   useEffect(() => {
     if (!dimensions || !event.relativePosition || !event.priority) return;
     const pos = getAbsolutePosition(event.relativePosition, event.priority, dimensions);
@@ -63,7 +62,12 @@ const DraggableEvent = ({ event, dimensions }) => {
       }
     };
 
-    console.log("ASSIGNMENT & stuff", { _, d, assignment, dimensions, exact });
+    console.log("ASSIGNMENT & stuff", { _,
+      d, evt: events.find(e => e.id === event.id),
+      assignment,
+      dimensions,
+      exact
+    });
 
     if (!exact) {
       setStyle(prev => ({ ...prev, x: d.x, y: d.y }));

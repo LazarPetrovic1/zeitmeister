@@ -47,7 +47,9 @@ function ViewEventModal({ title, onClose, onSave, show, mainbtn, evDetails, remo
             checked={!!checked}
             onChange={completeEvt}
           />
-          <label htmlFor="completion">{checked ? "Complete" : "Incomplete"}</label>
+          <label className="ps-2" htmlFor="completion" style={{ color: checked ? "lightgreen" : "red" }}>
+            {checked ? "Complete" : "Incomplete"}
+          </label>
         </div>
         {isRecurring && (
           <div>

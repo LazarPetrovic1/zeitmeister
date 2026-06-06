@@ -2,7 +2,7 @@ import { useContext, useState } from "react";
 import { EventContext } from "../../contexts/EventContext";
 import Modal from "../Modal";
 import List from "../List";
-import { generateUrgencyCsv, generateUrgencyJson, generateUrgencyMarkdown } from "../../utils";
+import { generateUrgencyCsv, generateUrgencyJson, generateUrgencyMarkdown, generateUrgencyPdf } from "../../utils";
 
 /**
  * 
@@ -22,6 +22,7 @@ function UrgencyReportModal({ show, onSave, onClose, title }) {
     if (format.toLowerCase() === "csv") generateUrgencyCsv(urgencyRequests)
     else if (format.toLowerCase() === "md") generateUrgencyMarkdown(urgencyRequests)
     else if (format.toLowerCase() === "json") generateUrgencyJson(urgencyRequests)
+    else if (format.toLowerCase() === "pdf") generateUrgencyPdf(urgencyRequests)
     else return;
   }
   return (
@@ -61,6 +62,7 @@ function UrgencyReportModal({ show, onSave, onClose, title }) {
               <option value="csv">CSV</option>
               <option value="json">JSON</option>
               <option value="md">MD</option>
+              <option value="pdf">PDF</option>
             </select>
           </div>
         </div>

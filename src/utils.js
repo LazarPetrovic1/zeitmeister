@@ -1,4 +1,6 @@
 import moment from "moment";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 export const evtdate = (date) => moment(date).format("yyyy-MM-DD hh:mm")
 export const intro = `Welcome to TimeTracker - Zeitmeister, your ultimate companion for mastering
@@ -396,4 +398,58 @@ export const generateUrgencyJson = (urgencyRequests) => {
   link.click();
   document.body.removeChild(link);
   URL.revokeObjectURL(url);
+};
+
+export const generateUrgencyPdf = (urgencyRequests) => {
+  const {
+    urgentImportant = [],
+    notUrgentImportant = [],
+    urgentNotImportant = [],
+    notUrgentNotImportant = [],
+    undetermined = []
+  } = urgencyRequests;
+
+  const rows = [];
+
+  const appendEvents = (category, events) => {
+    for (const evt of events) {
+      rows.push([
+        category,
+        evt.id ?? "",
+        evt.title ?? evt.name ?? "",
+        evt.start
+          ? new Date(evt.start).toLocaleString()
+          : "",
+        evt.end
+          ? new Date(evt.end).toLocaleString()
+          : "",
+        evt.completed ? "Yes" : "No"
+      ]);
+    }
+  };
+
+  appendEvents("Urgent & Important", urgentImportant);
+  appendEvents("Important Not Urgent", notUrgentImportant);
+  appendEvents("Urgent Not Important", urgentNotImportant);
+  appendEvents("Not Urgent Not Important", notUrgentNotImportant);
+  appendEvents("Undetermined", undetermined);
+
+  const doc = new jsPDF();
+
+  doc.setFontSize(18);
+  doc.text("Eisenhower Matrix Report", 14, 20);
+
+  doc.setFontSize(10);
+  doc.text(`Generated: ${new Date().toLocaleString()}`, 14, 28);
+
+  autoTable(doc, {
+    startY: 35,
+    head: [["Category", "Id", "Title", "Start", "End", "Completed"]],
+    body: rows,
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [33, 37, 41] }
+  });
+
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+  doc.save(`urgency-report-${timestamp}.pdf`);
 };
