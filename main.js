@@ -13,9 +13,9 @@ function createWindow() {
       contextIsolation: false,
       devTools: true,
     },
-    icon: path.join(__dirname, 'logo.png')
+    icon: path.join(__dirname, 'icon.png')
   });
-  win.setIcon(path.join(__dirname, 'logo.png'))
+  win.setIcon(path.join(__dirname, 'icon.png'))
   if (isDev) win.loadURL('http://localhost:3000');
   else win.loadFile(path.join(__dirname, 'build', 'index.html'), { hash: '' });
   win.webContents.setWindowOpenHandler((details) => {

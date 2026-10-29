@@ -62,7 +62,7 @@
       "build/**/*",
       "main.js",
       "package.json",
-      "logo.png",
+      "icon.png",
       ".env",
       "data.json"
     ],
@@ -70,7 +70,7 @@
       "oneClick": false,
       "allowToChangeInstallationDirectory": true
     },
-    "icon": "logo.png"
+    "icon": "icon.png"
   },
   "eslintConfig": {
     "extends": [
